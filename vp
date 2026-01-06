@@ -1,0 +1,234 @@
+//TEMPLATE UNTUK VIRTUAL PET
+//UBAH SAJA APA APA KAMU MAU TAMBAH
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <fstream>
+#include <cstdlib> // Untuk rand() dan srand()
+
+using namespace std;
+
+// ======================================================
+// 1. CLASS AND OBJECTS
+// ======================================================
+
+class Pet {
+private:
+    // Data Members (Ciri-ciri tu Pet)
+    string name;
+    int health;     // Health (0-100)
+    int hunger;     // Hunger (0-100, 100 = Sangat lapar)
+    int happiness;  // Happiness (0-100)
+    int age;        // Age
+
+public:
+    // Constructor
+    Pet(string petName) {
+        name = petName;
+        health = 100;
+        hunger = 50;
+        happiness = 50;
+        age = 0;
+        cout << "\nWelcome, " << name << "! Let's start a new life." << endl;
+    }
+
+    // Accessor Functions (Untuk File I/O)
+    string getName() const { return name; }
+    int getHealth() const { return health; }
+    // ... Add other get functions here if needed
+
+    // ======================================================
+    // 4. USER DEFINED FUNCTIONS
+    // ======================================================
+
+    void feed() {
+        // Logic: Reduce hunger, increase health a little
+        if (hunger > 20) {
+            hunger -= 20;
+            health += 5;
+            if (health > 100) health = 100;
+            cout << name << " have eaten and feel full. " << endl;
+        } else {
+            cout << name << " is not hungry anymore. Do not overfeed!" << endl;
+        }
+        passTime(); // Time change
+    }
+
+    void play() {
+        // Logic: Increase happiness, increase hunger
+        if (happiness < 90) {
+            happiness += 15;
+            hunger += 10;
+            cout << name << " played happily! Woohoo! " << endl;
+        } else {
+            cout << name << " too happy and tired. " << endl;
+        }
+        passTime(); // Time change
+    }
+
+    // Member needs to add a 'sleep()' function here.
+
+    // ======================================================
+    // 3. CONTROL STRUCTURES & Game Loop Logic
+    // ======================================================
+
+    void passTime() {
+        // Logic: Automatic changes and revisions
+        age++; // Pet gets older every time an action is taken
+        hunger += 5; // Hunger always increasing
+
+        // 3. CONTROL STRUCTURES (Selection)
+        if (hunger >= 80) {
+            health -= 10;
+            cout << "\n[Reminder]: " << name << " is very hungry! Decreased health." << endl;
+        }
+        if (happiness <= 20) {
+            health -= 5;
+            cout << "\n[Reminder]: " << name << " is very sad. Decreased health." << endl;
+        }
+
+        // Make sure the value is between 0 and 100
+        if (health < 0) health = 0;
+        if (hunger > 100) hunger = 100;
+        if (happiness > 100) happiness = 100;
+    }
+    
+    // Death status check function
+    bool isAlive() const {
+        return health > 0;
+    }
+
+    // ======================================================
+    // 1. INPUT/OUTPUT & 7. MANIPULATORS
+    // ======================================================
+
+    void checkStatus() const {
+    
+    // --- PENAMBAHAN BARU: Hapus Layar ---
+    #ifdef _WIN32
+        system("cls"); // Untuk Windows
+    #else
+        system("clear"); // Untuk Linux/macOS
+    #endif
+    
+    // --- PENAMBAHAN BARU: Gambar Kucing ---
+    displayPetArt(); // Panggil fungsi gambar
+
+    cout << "\n==============================================" << endl;
+    cout << "           Current Status " << name << endl;
+    cout << "==============================================" << endl;
+    // ... (Sisa kode status tetap sama)
+    cout << left << setw(15) << "Age:" << right << setw(10) << age << " years old" << endl;
+    cout << left << setw(15) << "Health:" << right << setw(10) << health << " / 100" << endl;
+    cout << left << setw(15) << "Hunger:" << right << setw(10) << hunger << " / 100" << endl;
+    cout << left << setw(15) << "Happiness:" << right << setw(10) << happiness << " / 100" << endl;
+    cout << "==============================================" << endl;
+}
+    
+    // Tambahkan fungsi ini di dalam class Pet
+
+void displayPetArt() const {
+    // Tentukan gambar berdasarkan status kebahagiaan
+    if (health <= 20) {
+        cout << R"(
+         /\_/\
+        ( X.X )  (Sakit...)
+        > ^ <
+)" << endl;
+    } else if (happiness >= 80) {
+        cout << R"(
+         /\_/\
+        ( o.o )  (Senang!)
+         > ^ <
+)" << endl;
+    } else if (hunger >= 80) {
+        cout << R"(
+         /\_/\
+        ( -.- )  (Lapar...)
+         > ^ <
+)" << endl;
+    } else { // Normal/Default
+        cout << R"(
+         /\_/\
+        ( ?.? )  (Hi, )" << name << "!)" << endl;
+        cout << R"(
+         > ^ <
+)" << endl;
+    }
+}
+};
+
+// ======================================================
+// EXTERNAL FUNCTIONS FOR I/O FILES (Member 3)
+// ======================================================
+
+// 2. File Input/Output to read/write file
+void saveGame(const Pet& pet) {
+    ofstream outFile("pet_save.txt");
+    if (outFile.is_open()) {
+        outFile << pet.getName() << endl;
+        outFile << pet.getHealth() << endl;
+        // Member  needs to write hunger, happiness, age data to the file here
+        outFile.close();
+        cout << "\n--- Status " << pet.getName() << " successfully saved. ---" << endl;
+    } else {
+        cout << "Failed to open file to save." << endl;
+    }
+}
+// Member needs to add the loadGame function() here
+
+// ======================================================
+// MAIN FUNCTION (Ahli 4 & Ahli 5)
+// ======================================================
+int main() {
+    // 1. Input/Output (Ahli 4)
+    string petName;
+    cout << "Enter your pet's name: ";
+    getline(cin, petName);
+
+    Pet myPet(petName); // Pet object created (Classes and Objects)
+
+    // 5. ARRAY (Ahli 2) - Can be used for menu lists
+    string menuOptions[] = {"Feed", "Play", "Sleep", "View Status", "Save & Exit"};
+    int choice;
+
+    while (myPet.isAlive()) {
+        myPet.checkStatus();
+        
+        cout << "\n=== ACTION MENU ===" << endl;
+        // 3. CONTROL STRUCTURES (Repetition) & 5. ARRAY
+        for (int i = 0; i < 5; ++i) {
+            cout << i + 1 << ". " << menuOptions[i] << endl;
+        }
+
+        cout << "Your choice (1-5): ";
+        // 1. INPUT/OUTPUT
+        cin >> choice;
+
+        if (cin.fail() || choice < 1 || choice > 5) {
+            // Ahli 4: Input Validation
+            cout << "Invalid option. Please enter numbers between 1 and 5." << endl;
+            cin.clear();
+            cin.ignore(10000, '\n');
+            continue;
+        }
+
+        switch (choice) { // 3. CONTROL STRUCTURES (Selection)
+            case 1: myPet.feed(); break;
+            case 2: myPet.play(); break;
+            case 3: cout << "Ahli 2 perlu implement fungsi sleep()." << endl; break;
+            case 4: /* checkStatus() has been called at the beginning of the loop */ break;
+            case 5: 
+                saveGame(myPet); // 2. File I/O
+                cout << petName << " saying goodbye!" << endl;
+                return 0;
+        }
+    }
+
+    // Game End Logic
+    cout << "\n==============================================" << endl;
+    cout << "Sadly, " << petName << " has died. Game Over." << endl;
+    cout << "==============================================" << endl;
+
+    return 0;
+}

@@ -159,7 +159,7 @@ void displayPetArt() const {
 };
 
 // ======================================================
-// EXTERNAL FUNCTIONS FOR I/O FILES (Member 3)
+// EXTERNAL FUNCTIONS FOR I/O FILES 
 // ======================================================
 
 // 2. File Input/Output to read/write file
@@ -168,14 +168,37 @@ void saveGame(const Pet& pet) {
     if (outFile.is_open()) {
         outFile << pet.getName() << endl;
         outFile << pet.getHealth() << endl;
-        // Member  needs to write hunger, happiness, age data to the file here
+        outFile << pet.getHunger() << endl;
+        outFile << pet.getHappiness() << endl;
+        outFile << pet.getAge() << endl;
         outFile.close();
         cout << "\n--- Status " << pet.getName() << " successfully saved. ---" << endl;
     } else {
         cout << "Failed to open file to save." << endl;
     }
 }
-// Member needs to add the loadGame function() here
+       ifstream inFile("pet_save.txt");
+       if (inFile.is_open()) {
+          string name;
+          int health, hunger, happiness, age;
+       if (inFile >> name >> health >> hunger >> happiness >> age) {
+          pet.setName(name);
+          pet.setHealth(health);
+          pet.setHunger(hunger);
+          pet.setHappiness(happiness);
+          pet.setAge(age);
+          inFile.close();
+          cout << "\n--- Status " << pet.getName() << " successfully loaded. ---" << endl;
+          return true; 
+    } else {
+          cout << "Failed to read data from save file." << endl;
+          inFile.close();
+          return false;
+    } else {
+          cout << "Failed to open save file to load. Starting new game." << endl;
+          return false;
+    }
+}
 
 // ======================================================
 // MAIN FUNCTION (Ahli 4 & Ahli 5)

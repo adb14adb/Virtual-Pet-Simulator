@@ -66,7 +66,20 @@ public:
         passTime(); // Time change
     }
 
-    // Member needs to add a 'sleep()' function here.
+    void sleep() {
+       // Logic: Increase health and happiness, increase hunger slightly
+       if (health < 100) {
+           health += 20;
+           happiness += 10; 
+           hunger += 5;
+       if (health > 100) health = 100;
+       if (happiness > 100) happiness = 100;
+           cout << name << " rested well and is fully energized!" << endl;
+       } else {
+           cout << name << " is not sleepy anymore. Do not oversleep!" << endl;
+       }
+       passTime(); // Time change
+}
 
     // ======================================================
     // 3. CONTROL STRUCTURES & Game Loop Logic

@@ -50,6 +50,9 @@ public:
     // Accessor Functions (Untuk File I/O)
     string getName() const { return name; }
     int getHealth() const { return health; }
+    int getHunger() const { return hunger; }
+    int getHappiness() const { return happiness; }
+    int getAge() const { return age; }
     // ... Add other get functions here if needed
 
     // Mutator Functions
@@ -318,7 +321,7 @@ int main() {
     getline(cin, petName);
 
     Pet myPet(petName); // Pet object created (Classes and Objects)
-
+    loadGame(mypet);
     // 5. ARRAY (Ahli 2) - Can be used for menu lists
     string menuOptions[] = {"Feed", "Play", "Sleep","View Inventory", "View Status", "Save & Exit"};
     int choice;

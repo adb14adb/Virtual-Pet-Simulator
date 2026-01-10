@@ -242,30 +242,24 @@ public:
 void displayPetArt() const {
     // Tentukan gambar berdasarkan status kebahagiaan
     if (health <= 20) {
-        cout << R"(
-         /\_/\
-        ( X.X )  (Sakit...)
-        > ^ <
-)" << endl;
+        cout << " /\\_/\\" << endl;
+        cout << "( X.X )  (Sakit...)" << endl;
+        cout << " > ^ <" << endl;
+
     } else if (happiness >= 80) {
-        cout << R"(
-         /\_/\
-        ( o.o )  (Senang!)
-         > ^ <
-)" << endl;
+        cout << " /\\_/\\" << endl;
+        cout << "( o.o )  (Senang!)" << endl;
+        cout << " > ^ <" << endl;
+
     } else if (hunger >= 80) {
-        cout << R"(
-         /\_/\
-        ( -.- )  (Lapar...)
-         > ^ <
-)" << endl;
+        cout << " /\\_/\\" << endl;
+        cout << "( -.- )  (Lapar...)" << endl;
+        cout << " > ^ <" << endl;
+
     } else { // Normal/Default
-        cout << R"(
-         /\_/\
-        ( ?.? )  (Hi, )" << name << "!)" << endl;
-        cout << R"(
-         > ^ <
-)" << endl;
+        cout << " /\\_/\\" << endl;
+        cout << "( ?.? )  (Hi, " << name << "!)" << endl;
+        cout << " > ^ <" << endl;
     }
 }
 };

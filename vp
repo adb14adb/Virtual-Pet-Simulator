@@ -321,7 +321,7 @@ int main() {
     getline(cin, petName);
 
     Pet myPet(petName); // Pet object created (Classes and Objects)
-    loadGame(mypet);
+    loadGame(myPet);
     // 5. ARRAY (Ahli 2) - Can be used for menu lists
     string menuOptions[] = {"Feed", "Play", "Sleep","View Inventory", "View Status", "Save & Exit"};
     int choice;

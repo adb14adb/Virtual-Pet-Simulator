@@ -9,6 +9,16 @@
 using namespace std;
 
 // ======================================================
+// KRITERIA 5: ARRAY - Food Item Struct
+// ======================================================
+struct FoodItem {
+    string name;
+    int hungerReduction;
+    int healthBoost;
+    int quantity;
+};
+
+// ======================================================
 // 1. CLASS AND OBJECTS
 // ======================================================
 
@@ -21,6 +31,10 @@ private:
     int happiness;  // Happiness (0-100)
     int age;        // Age
 
+    // KRITERIA 5: ARRAY FOR FOOD INVENTORY
+    FoodItem foodInventory[5];
+    int foodTypes;
+
 public:
     // Constructor
     Pet(string petName) {
@@ -29,6 +43,7 @@ public:
         hunger = 50;
         happiness = 50;
         age = 0;
+        initializeFoodInventory();  // KRITERIA 5
         cout << "\nWelcome, " << name << "! Let's start a new life." << endl;
     }
 
@@ -37,21 +52,105 @@ public:
     int getHealth() const { return health; }
     // ... Add other get functions here if needed
 
+    // Mutator Functions
+    void setName(string n) { name = n; }
+    void setHealth(int h) { health = h; }
+    void setHunger(int h) { hunger = h; }
+    void setHappiness(int h) { happiness = h; }
+    void setAge(int a) { age = a; }
+
+    // ======================================================
+    // KRITERIA 5: INITIALIZE FOOD INVENTORY (Array)
+    // ======================================================
+    void initializeFoodInventory() {
+        foodTypes = 5;
+        
+        foodInventory[0].name = "Apple";
+        foodInventory[0].hungerReduction = 15;
+        foodInventory[0].healthBoost = 8;
+        foodInventory[0].quantity = 5;
+        
+        foodInventory[1].name = "Meat";
+        foodInventory[1].hungerReduction = 30;
+        foodInventory[1].healthBoost = 15;
+        foodInventory[1].quantity = 3;
+        
+        foodInventory[2].name = "Fish";
+        foodInventory[2].hungerReduction = 25;
+        foodInventory[2].healthBoost = 20;
+        foodInventory[2].quantity = 4;
+        
+        foodInventory[3].name = "Vegetable";
+        foodInventory[3].hungerReduction = 12;
+        foodInventory[3].healthBoost = 10;
+        foodInventory[3].quantity = 6;
+        
+        foodInventory[4].name = "Treat";
+        foodInventory[4].hungerReduction = 8;
+        foodInventory[4].healthBoost = 2;
+        foodInventory[4].quantity = 8;
+    }
+
+    // ======================================================
+    // KRITERIA 5: VIEW INVENTORY (Array Display)
+    // ======================================================
+    void viewInventory() const {
+        cout << "\n========== Food Inventory ==========" << endl;
+        for (int i = 0; i < foodTypes; i++) {
+            cout << i + 1 << ". " << foodInventory[i].name 
+                 << " - Qty: " << foodInventory[i].quantity << endl;
+        }
+        cout << "====================================" << endl;
+    }
+
     // ======================================================
     // 4. USER DEFINED FUNCTIONS
     // ======================================================
 
     void feed() {
-        // Logic: Reduce hunger, increase health a little
-        if (hunger > 20) {
-            hunger -= 20;
-            health += 5;
-            if (health > 100) health = 100;
-            cout << name << " have eaten and feel full. " << endl;
-        } else {
-            cout << name << " is not hungry anymore. Do not overfeed!" << endl;
+        cout << "\n--- Available Food ---" << endl;
+        
+        // Display food inventory (ARRAY USAGE)
+        for (int i = 0; i < foodTypes; i++) {
+            cout << i + 1 << ". " << foodInventory[i].name 
+                 << " (Qty: " << foodInventory[i].quantity << ")" << endl;
         }
-        passTime(); // Time change
+        
+        cout << "Choose food (1-5) or 0 to cancel: ";
+        int foodChoice;
+        cin >> foodChoice;
+        
+        if (foodChoice < 0 || foodChoice > 5) {
+            cout << "Invalid choice!" << endl;
+            passTime();
+            return;
+        }
+        
+        if (foodChoice == 0) {
+            cout << "Cancelled." << endl;
+            return;
+        }
+        
+        int index = foodChoice - 1;
+        
+        // Check if food is available
+        if (foodInventory[index].quantity <= 0) {
+            cout << "Sorry, we ran out of " << foodInventory[index].name << "!" << endl;
+            passTime();
+            return;
+        }
+        
+        // Feed the pet with selected food
+        hunger -= foodInventory[index].hungerReduction;
+        health += foodInventory[index].healthBoost;
+        foodInventory[index].quantity--;  // Reduce quantity
+        
+        if (hunger < 0) hunger = 0;
+        if (health > 100) health = 100;
+        
+        cout << name << " ate " << foodInventory[index].name << " and felt satisfied!" << endl;
+        
+        passTime();
     }
 
     void play() {
@@ -190,26 +289,28 @@ void saveGame(const Pet& pet) {
         cout << "Failed to open file to save." << endl;
     }
 }
-       ifstream inFile("pet_save.txt");
-       if (inFile.is_open()) {
-          string name;
-          int health, hunger, happiness, age;
-       if (inFile >> name >> health >> hunger >> happiness >> age) {
-          pet.setName(name);
-          pet.setHealth(health);
-          pet.setHunger(hunger);
-          pet.setHappiness(happiness);
-          pet.setAge(age);
-          inFile.close();
-          cout << "\n--- Status " << pet.getName() << " successfully loaded. ---" << endl;
-          return true; 
+    bool loadGame(Pet& pet) {
+    ifstream inFile("pet_save.txt");
+    if (inFile.is_open()) {
+        string name;
+        int health, hunger, happiness, age;
+        if (inFile >> name >> health >> hunger >> happiness >> age) {
+            pet.setName(name);
+            pet.setHealth(health);
+            pet.setHunger(hunger);
+            pet.setHappiness(happiness);
+            pet.setAge(age);
+            inFile.close();
+            cout << "\n--- Status " << pet.getName() << " successfully loaded. ---" << endl;
+            return true; 
+        } else {
+            cout << "Failed to read data from save file." << endl;
+            inFile.close();
+            return false;
+        }
     } else {
-          cout << "Failed to read data from save file." << endl;
-          inFile.close();
-          return false;
-    } else {
-          cout << "Failed to open save file to load. Starting new game." << endl;
-          return false;
+        cout << "Failed to open save file to load. Starting new game." << endl;
+        return false;
     }
 }
 
@@ -225,7 +326,7 @@ int main() {
     Pet myPet(petName); // Pet object created (Classes and Objects)
 
     // 5. ARRAY (Ahli 2) - Can be used for menu lists
-    string menuOptions[] = {"Feed", "Play", "Sleep", "View Status", "Save & Exit"};
+    string menuOptions[] = {"Feed", "Play", "Sleep","View Inventory", "View Status", "Save & Exit"};
     int choice;
 
     while (myPet.isAlive()) {
@@ -233,17 +334,17 @@ int main() {
         
         cout << "\n=== ACTION MENU ===" << endl;
         // 3. CONTROL STRUCTURES (Repetition) & 5. ARRAY
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 6; ++i) {
             cout << i + 1 << ". " << menuOptions[i] << endl;
         }
 
-        cout << "Your choice (1-5): ";
+        cout << "Your choice (1-6): ";
         // 1. INPUT/OUTPUT
         cin >> choice;
 
-        if (cin.fail() || choice < 1 || choice > 5) {
+        if (cin.fail() || choice < 1 || choice > 6) {
             // Ahli 4: Input Validation
-            cout << "Invalid option. Please enter numbers between 1 and 5." << endl;
+            cout << "Invalid option. Please enter numbers between 1 and 6." << endl;
             cin.clear();
             cin.ignore(10000, '\n');
             continue;
@@ -252,9 +353,10 @@ int main() {
         switch (choice) { // 3. CONTROL STRUCTURES (Selection)
             case 1: myPet.feed(); break;
             case 2: myPet.play(); break;
-            case 3: cout << "Ahli 2 perlu implement fungsi sleep()." << endl; break;
-            case 4: /* checkStatus() has been called at the beginning of the loop */ break;
-            case 5: 
+            case 3: myPet.sleep(); break;
+            case 4: myPet.viewInventory(); break;
+            case 5: /* checkStatus() has been called at the beginning of the loop */ break;
+            case 6: 
                 saveGame(myPet); // 2. File I/O
                 cout << petName << " saying goodbye!" << endl;
                 return 0;

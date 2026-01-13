@@ -3,6 +3,7 @@
 #include <iomanip>   // Include library for I/O manipulators like setw
 #include <fstream>   // Include library for file stream operations
 #include <cstdlib>   // Include library for standard utility functions like system()
+#include <cstdio>    // Include library for file deletion function: remove()
 
 using namespace std; // Use the standard namespace
 
@@ -241,6 +242,11 @@ int main() { // Main entry point
 
     myPet.checkStatus(); // Final status display
     cout << "\n[Game Over] Sadly, " << name << " has passed away." << endl; // Death message
+
+    // --- NEW FEATURE: AUTO-DELETE SAVE FILE ON DEATH ---
+    string deadFileName = myPet.getName() + ".txt"; // Define the file to be deleted
+    remove(deadFileName.c_str()); // Permanently delete the text file using its C-string name
+    cout << "[System] Save file for " << name << " has been deleted." << endl; // Confirmation message
 
     return 0; // Successful execution end
 }

@@ -1,227 +1,246 @@
-#include <iostream>  // Include library for standard input and output streams
-#include <string>    // Include library for using string data types
-#include <iomanip>   // Include library for input/output manipulators like setw
-#include <fstream>   // Include library for file handling (reading and writing files)
+#include <iostream>  // Include library for standard input and output
+#include <string>    // Include library for string data handling
+#include <iomanip>   // Include library for I/O manipulators like setw
+#include <fstream>   // Include library for file stream operations
 #include <cstdlib>   // Include library for standard utility functions like system()
 
-using namespace std; // Use the standard namespace to avoid prefixing std::
+using namespace std; // Use the standard namespace
 
 // ======================================================
 // 1. CLASS AND OBJECTS (Criteria 6)
 // ======================================================
-class Pet {          // Define the Pet class to encapsulate pet data and behaviors
-private:             // Access specifier for private data members
-    string name;     // Variable to store the pet's name
-    int health, hunger, happiness, age; // Variables to store pet status values
+class Pet {          // Define the Pet class
+private:             // Private access specifier
+    string name;     // Attribute to store pet name
+    int health, hunger, happiness, age; // Attributes for pet status
 
-public:              // Access specifier for public member functions
-    Pet(string petName) { // Constructor to initialize a new pet object
-        name = petName;   // Assign the provided name to the pet
-        health = 100;     // Set initial health to maximum (100)
-        hunger = 50;      // Set initial hunger level to 50
-        happiness = 50;   // Set initial happiness level to 50
-        age = 0;          // Set initial age to 0
+public:              // Public access specifier
+    Pet(string petName) { // Constructor to initialize pet object
+        name = petName;   // Assign pet name
+        health = 100;     // Initial health value
+        hunger = 50;      // Initial hunger value
+        happiness = 50;   // Initial happiness value
+        age = 0;          // Initial age value
     }
 
-    // Accessors (Criteria 4) - Functions to retrieve private data
-    string getName() const { return name; }       // Return the pet's name
-    int getHealth() const { return health; }     // Return current health
-    int getHunger() const { return hunger; }     // Return current hunger level
-    int getHappiness() const { return happiness; } // Return current happiness level
-    int getAge() const { return age; }           // Return current age
+    // Accessors (Criteria 4)
+    string getName() const { return name; }       // Get pet name
+    int getHealth() const { return health; }    // Get health level
+    int getHunger() const { return hunger; }    // Get hunger level
+    int getHappiness() const { return happiness; } // Get happiness level
+    int getAge() const { return age; }          // Get age value
 
-    // Mutator for loading data (Criteria 2) - Function to set all stats at once
-    void setStats(int h, int hu, int hap, int a) {
-        health = h;      // Update health from loaded data
-        hunger = hu;     // Update hunger from loaded data
-        happiness = hap; // Update happiness from loaded data
-        age = a;         // Update age from loaded data
+    // Mutator to update stats from loaded file
+    void setStats(int h, int hu, int hap, int a) { // Function to set pet stats
+        health = h;       // Update health
+        hunger = hu;      // Update hunger
+        happiness = hap;  // Update happiness
+        age = a;          // Update age
     }
 
-    // ======================================================
-    // 4. USER DEFINED FUNCTIONS (Criteria 4)
-    // ======================================================
-    void feed() {        // Function to handle feeding the pet
-        if (hunger > 10) { // Check if the pet is hungry enough to eat
-            hunger -= 20;  // Decrease hunger level by 20
-            health += 5;   // Increase health slightly by 5
-            if (hunger < 0) hunger = 0; // Ensure hunger does not drop below 0
-            if (health > 100) health = 100; // Ensure health does not exceed 100
-            cout << "\n[Action] " << name << " is eating delicious food!" << endl; // Display action message
-        } else {
-            cout << "\n[Action] " << name << " is too full to eat!" << endl; // Message if pet is not hungry
+    void feed() { // Function to feed the pet
+        cout << "\n[Action] You fed " << name << "." << endl; // Output message
+        hunger -= 20; // Decrease hunger level
+        if (hunger < 0) hunger = 0; // Prevent hunger from dropping below 0
+        passTime(); // Progress time after action
+    }
+
+    void play() { // Function to play with the pet
+        cout << "\n[Action] You played with " << name << "." << endl; // Output message
+        happiness += 20; // Increase happiness level
+        if (happiness > 100) happiness = 100; // Cap happiness at 100
+        hunger += 10; // Increase hunger due to activity
+        passTime(); // Progress time after action
+    }
+
+    void sleep() { // Function for pet to sleep
+        cout << "\n[Action] " << name << " is sleeping..." << endl; // Output message
+        health += 15; // Recover health
+        if (health > 100) health = 100; // Cap health at 100
+        hunger += 5; // Increase hunger during sleep
+        passTime(); // Progress time after action
+    }
+
+    void passTime() { // Function to simulate time passing
+        age++;           // Increase age
+        hunger += 5;     // Increase hunger over time
+        happiness -= 5;  // Decrease happiness over time
+
+        // INDIRECT DEATH LOGIC
+        if (hunger >= 80) health -= 10;   // Lose health if starving
+        if (happiness <= 20) health -= 5; // Lose health if neglected
+
+        // SUDDEN DEATH LOGIC (Starvation)
+        if (hunger >= 100) health = 0; // Pet dies if hunger hits 100
+
+        // CLAMPING VALUES
+        if (happiness < 0) happiness = 0; // Ensure happiness is not negative
+        if (hunger > 100) hunger = 100;   // Ensure hunger does not exceed 100
+        if (happiness > 100) happiness = 100; // Cap happiness at 100
+        if (health < 0) health = 0; // Ensure health is not negative
+    }
+
+    void checkStatus() const { // Function to display pet status
+        system("cls"); // Clear the console screen
+        cout << "==============================================" << endl; // UI line
+        cout << "            VIRTUAL PET DASHBOARD             " << endl; // UI header
+        cout << "==============================================" << endl; // UI line
+        
+        // Cat ASCII Art
+        if (health > 0) { // Check if pet is alive
+            cout << "      |\\__/,|   (`\\  " << endl; // Alive cat head
+            cout << "    _.|o o  |_   ) ) " << endl; // Alive cat eyes
+            cout << "  -(((---(((-------- " << endl; // Alive cat feet
+        } else { // If pet is dead
+            cout << "      |\\__/,|        " << endl; // Dead cat head
+            cout << "    _.|x x  |_       " << endl; // Dead cat eyes
+            cout << "  -(((---(((-------- " << endl; // Dead cat feet
         }
-        passTime();      // Call passTime to simulate time progression after an action
-    }
 
-    void play() {        // Function to handle playing with the pet
-        if (happiness < 100) { // Check if happiness can still be increased
-            happiness += 20;   // Increase happiness level by 20
-            hunger += 15;      // Playing makes the pet hungrier by 15
-            if (happiness > 100) happiness = 100; // Ensure happiness does not exceed 100
-            cout << "\n[Action] " << name << " played with you and looks happy!" << endl; // Action message
-        }
-        passTime();      // Call passTime after playing
-    }
+        cout << " Name      : " << name << endl; // Display name
+        cout << " Age       : " << age << " cycles" << endl; // Display age
+        cout << " Health    : [" << setw(3) << health << "/100]" << endl; // Display health
+        cout << " Hunger    : [" << setw(3) << hunger << "/100]" << endl; // Display hunger
+        cout << " Happiness : [" << setw(3) << happiness << "/100]" << endl; // Display happiness
+        cout << "==============================================" << endl; // UI line
 
-    void sleep() {       // Function to handle the pet sleeping
-        cout << "\n[Action] " << name << " is taking a long nap... Zzz..." << endl; // Action message
-        health += 20;    // Sleeping restores health significantly by 20
-        hunger += 10;    // Pet gets slightly hungrier while sleeping
-        if (health > 100) health = 100; // Ensure health capped at 100
-        passTime();      // Call passTime after sleeping
-    }
-
-    void passTime() {    // Function to simulate automatic status changes over time
-        age++;           // Increment the pet's age
-        hunger += 5;     // Hunger increases naturally over time
-        happiness -= 5;  // Happiness decreases naturally over time as the pet gets bored
-        if (hunger >= 80) health -= 10;   // Neglect: Lose health if hunger is too high
-        if (happiness <= 20) health -= 5; // Neglect: Lose health if happiness is too low
-
-        if (health < 0) health = 0;       // Clamp health at minimum 0
-        if (hunger > 100) hunger = 100;   // Clamp hunger at maximum 100
-        if (happiness > 100) happiness = 100; // Clamp happiness at maximum 100
-    }
-
-    bool isAlive() const { return health > 0; } // Check if health is above zero
-
-    void displayPetArt() const { // Function to show ASCII art based on pet status
-        if (health <= 20) {      // Check if pet is sick or dying
-            cout << "  /\\_/\\\n ( X.X ) (Sick/Tired...)\n  > ^ <" << endl;
-        } else if (happiness >= 80) { // Check if pet is very happy
-            cout << "  /\\_/\\\n ( o.o ) (Very Happy!)\n  > ^ <" << endl;
-        } else if (hunger >= 80) {    // Check if pet is very hungry
-            cout << "  /\\_/\\\n ( -.- ) (So hungry...)\n  > ^ <" << endl;
-        } else {                      // Default art for normal state
-            cout << "  /\\_/\\\n ( ^.^ ) (Hi, " << name << "!)\n  > ^ <" << endl;
+        // WARNING SYSTEM
+        if (health > 0) { // Warnings only if alive
+            if (happiness <= 20) { // Low happiness warning
+                cout << "[WARNING] " << name << " is very bored! Play with it." << endl; // Warning message
+            }
+            if (hunger >= 80) { // High hunger warning
+                cout << "[WARNING] " << name << " is starving! Feed it now." << endl; // Warning message
+            }
         }
     }
 
-    void checkStatus() const { // Function to display formatted status dashboard
-        #ifdef _WIN32
-            system("cls");     // Clear console for Windows systems
-        #else
-            system("clear");   // Clear console for Linux/macOS systems
-        #endif
-
-        displayPetArt();       // Show current ASCII art
-        cout << "\n==============================================" << endl; // Visual separator
-        cout << "           Current Status: " << name << endl;             // Display pet name
-        cout << "==============================================" << endl; // Visual separator
-        // Use iomanip manipulators to align the status table (Criteria 7)
-        cout << left << setw(15) << "Age:" << right << setw(10) << age << " days" << endl;
-        cout << left << setw(15) << "Health:" << right << setw(10) << health << " / 100" << endl;
-        cout << left << setw(15) << "Hunger:" << right << setw(10) << hunger << " / 100" << endl;
-        cout << left << setw(15) << "Happiness:" << right << setw(10) << happiness << " / 100" << endl;
-        cout << "==============================================" << endl; // Visual separator
+    bool isAlive() const { // Function to check life status
+        return health > 0; // Return true if health > 0
     }
 };
 
 // ======================================================
-// 2. FILE I/O FUNCTIONS (Criteria 2)
+// 2. FILE I/O OPERATIONS (Criteria 2)
 // ======================================================
-void saveGame(const Pet& pet) { // Function to save pet data to a text file
-    ofstream outFile("pet_save.txt"); // Open file "pet_save.txt" for writing
-    if (outFile.is_open()) {          // Check if file opened successfully
-        outFile << pet.getName() << endl;      // Write name to the first line
-        outFile << pet.getHealth() << endl;    // Write health to the second line
-        outFile << pet.getHunger() << endl;    // Write hunger to the third line
-        outFile << pet.getHappiness() << endl; // Write happiness to the fourth line
-        outFile << pet.getAge() << endl;       // Write age to the fifth line
-        outFile.close();                       // Close the file stream
-        cout << "\n[System] Game saved successfully to pet_save.txt!" << endl; // Success message
-    } else {
-        cout << "\n[Error] Unable to create save file!" << endl; // Error message if file fails to open
+void saveGame(const Pet& pet) { // Function to save pet data to file
+    string fileName = pet.getName() + ".txt"; // Create filename based on pet name
+    ofstream outFile(fileName); // Open file for writing
+    if (outFile.is_open()) { // If file opened successfully
+        outFile << "Name: " << pet.getName() << endl; // Save name
+        outFile << "Health: " << pet.getHealth() << endl; // Save health
+        outFile << "Hunger: " << pet.getHunger() << endl; // Save hunger
+        outFile << "Happiness: " << pet.getHappiness() << endl; // Save happiness
+        outFile << "Age: " << pet.getAge() << endl; // Save age
+        outFile.close(); // Close file
+        cout << "\n[System] Game saved to " << fileName << "!" << endl; // Success message
     }
 }
 
-bool loadGame(string &n, int &h, int &hu, int &hap, int &a) { // Function to read saved data
-    ifstream inFile("pet_save.txt"); // Open file for reading
-    if (inFile.is_open()) {          // Check if file exists and opened
-        if (!(getline(inFile, n))) return false; // Try to read name, return false if fails
-        if (!(inFile >> h >> hu >> hap >> a)) return false; // Read numerical stats, return false if fails
-        inFile.close();               // Close file stream
-        return true;                  // Return true if all data read successfully
+bool loadGame(string searchName, string &n, int &h, int &hu, int &hap, int &a) { // Function to load pet data
+    string fileName = searchName + ".txt"; // Define filename to look for
+    ifstream inFile(fileName); // Open file for reading
+    string dummy; // To skip text labels
+    if (inFile.is_open()) { // If file found
+        if (!(inFile >> dummy)) return false; // Skip "Name:" label
+        getline(inFile >> ws, n); // Read pet name
+        if (!(inFile >> dummy >> h)) return false; // Read "Health:" and value
+        if (!(inFile >> dummy >> hu)) return false; // Read "Hunger:" and value
+        if (!(inFile >> dummy >> hap)) return false; // Read "Happiness:" and value
+        if (!(inFile >> dummy >> a)) return false; // Read "Age:" and value
+        inFile.close(); // Close file
+        return true; // Return success
     }
-    return false;                     // Return false if file could not be opened
+    return false; // Return failure if file not found
 }
 
 // ======================================================
-// MAIN FUNCTION (Criteria 1, 3, 5)
+// 3. MAIN PROGRAM LOOP
 // ======================================================
-int main() {            // Entry point of the program
-    string name = "Mimi"; // Initialize default name
-    int h = 100, hu = 50, hap = 50, a = 0; // Initialize default status variables
-    char loadChoice;      // Variable to store user's load decision
-    bool loaded = false;  // Flag to track if data was loaded from file
+int main() { // Main entry point
+    string name; // Variable for name
+    int health, hunger, happiness, age; // Variables for stats
+    char loadChoice; // Variable for user choice
+    bool loaded = false; // Flag for load status
 
-    cout << "--- VIRTUAL PET SIMULATOR ---" << endl; // Welcome message
-    cout << "Do you want to load previous save? (y/n): "; // Prompt for loading
-    cin >> loadChoice;    // Get user input for loading
-    cin.ignore();         // Clear input buffer for following getline
+    cout << "--- VIRTUAL PET SIMULATOR ---" << endl; // Game title
 
-    if (loadChoice == 'y' || loadChoice == 'Y') { // If user chooses to load
-        if (loadGame(name, h, hu, hap, a)) {      // Attempt to load data from file
-            loaded = true;                        // Set flag to true if successful
-            cout << "\n[System] Welcome back, " << name << "!" << endl; // Welcome message
-        } else {
-            cout << "\n[System] No save file found. Starting new game." << endl; // Handle missing file
-        }
+    while (true) { // Input validation loop for loading
+        cout << "Do you want to load a pet? (y/n): "; // Prompt message
+        cin >> loadChoice; // Get choice
+        if (loadChoice == 'y' || loadChoice == 'Y' || loadChoice == 'n' || loadChoice == 'N') break; // Exit if valid
+        cout << "[!] Invalid input! Use 'y' or 'n'." << endl; // Error message
+        cin.clear(); // Clear cin error state
+        cin.ignore(10000, '\n'); // Ignore invalid input
     }
 
-    if (!loaded) {        // If no data was loaded, start a new pet creation
-        cout << "Enter your new pet's name: "; // Prompt for pet name
-        string inputName; // Temporary string for input
-        getline(cin, inputName); // Get the full line input for the name
-        if (!inputName.empty()) name = inputName; // Use input if not empty, else keep "Mimi"
+    if (loadChoice == 'y' || loadChoice == 'Y') { // If user wants to load
+        string searchName; // Search name variable
+        cout << "Enter the name of the pet you want to load: "; // Prompt for name
+        cin.ignore(10000, '\n'); // Clear buffer
+        getline(cin, searchName); // Read full name
+
+        if (loadGame(searchName, name, health, hunger, happiness, age)) { // Try loading
+            cout << "[System] " << name << " loaded successfully!" << endl; // Success message
+            loaded = true; // Set flag to true
+            cout << "Press Enter to start..."; // Wait prompt
+            cin.get(); // Wait for key press
+        } else { // If load fails
+            cout << "[Error] No save file found for " << searchName << ". Starting new game." << endl; // Error message
+        }
+    } else { // If user does not want to load
+        cin.ignore(10000, '\n'); // Clear buffer
     }
 
-    // Initialize pet object (Criteria 6)
-    Pet myPet(name);      // Create an instance of Pet with the chosen name
-    if (loaded) {         // If data was loaded from file
-        myPet.setStats(h, hu, hap, a); // Apply the loaded stats to the object
+    if (!loaded) { // If no game was loaded
+        cout << "Enter your new pet's name: "; // Prompt for new name
+        getline(cin, name); // Read new pet name
     }
 
-    // Criteria 5: Array for menu options - stores multiple strings for the UI
-    string menuOptions[] = {"Feed", "Play", "Sleep", "Check Status", "Save & Exit"};
-    int choice;           // Variable to store user's menu selection
+    Pet myPet(name); // Instantiate Pet object (Criteria 6)
+    if (loaded) myPet.setStats(health, hunger, happiness, age); // Apply loaded stats if available
 
-    while (myPet.isAlive()) { // Game loop continues as long as pet is alive (Criteria 3)
-        myPet.checkStatus();  // Display the dashboard and ASCII art
-        cout << "\n=== ACTION MENU ===" << endl; // Display menu header
-        for (int i = 0; i < 5; ++i) { // Loop through the array to print menu (Criteria 5)
-            cout << i + 1 << ". " << menuOptions[i] << endl; // Print each option
+    while (myPet.isAlive()) { // Game loop (Criteria 3)
+        myPet.checkStatus(); // Show current dashboard
+        cout << "\nActions:" << endl; // Menu header
+        cout << "1. Feed" << endl; // Option 1
+        cout << "2. Play" << endl; // Option 2
+        cout << "3. Sleep" << endl; // Option 3
+        cout << "4. Do Nothing" << endl; // Option 4
+        cout << "5. Save & Exit" << endl; // Option 5
+        cout << "Enter choice (1-5): "; // Prompt for menu
+
+        int choice; // Variable for menu choice
+        if (!(cin >> choice)) { // Validate numeric input
+            cout << "\n[!] Invalid option! Use numbers (1-5) only." << endl; // Error message
+            cout << "Press Enter to try again..."; // Wait prompt
+            cin.clear(); // Clear error
+            cin.ignore(10000, '\n'); // Clear buffer
+            cin.get(); // Wait for key press
+            continue; // Restart loop
         }
 
-        cout << "Choice (1-5): "; // Prompt for action choice
-        if (!(cin >> choice)) {   // Validate input (Criteria 1) - if input is not an integer
-            cin.clear();          // Clear the error flag on cin
-            cin.ignore(10000, '\n'); // Discard invalid input in buffer
-            continue;             // Restart the loop
+        if (choice == 5) { // If exit chosen
+            saveGame(myPet); // Save data (Criteria 2)
+            cout << name << " says goodbye!" << endl; // Exit message
+            return 0; // Terminate program
         }
 
-        switch (choice) {         // Handle selection using switch-case (Criteria 3)
-            case 1: myPet.feed(); break;  // Call feed function
-            case 2: myPet.play(); break;  // Call play function
-            case 3: myPet.sleep(); break; // Call sleep function
-            case 4: break;                // Choice 4 just lets the loop refresh the status
-            case 5:                       // Handle exit
-                saveGame(myPet);          // Save game data before exiting
-                cout << name << " says goodbye!" << endl; // Farewell message
-                return 0;                 // End the program
-            default:                      // Handle invalid menu numbers
-                cout << "Invalid choice!" << endl; // Display error message
+        switch (choice) { // Handle choices (Criteria 3)
+            case 1: myPet.feed(); break; // Feed action
+            case 2: myPet.play(); break; // Play action
+            case 3: myPet.sleep(); break; // Sleep action
+            case 4: myPet.passTime(); break; // Just pass time
+            default: cout << "Invalid choice!" << endl; // Handle invalid number
         }
-        
-        cout << "\nPress Enter to continue..."; // Prompt user to proceed
-        cin.ignore(10000, '\n'); // Clear remaining newline in buffer
-        cin.get();               // Wait for a key press
+
+        cout << "\nPress Enter to continue..."; // Wait prompt
+        cin.ignore(10000, '\n'); // Clear buffer
+        cin.get(); // Wait for key press
     }
 
-    // Final outcome if loop ends (Criteria 3)
-    myPet.checkStatus();         // Show final status
+    myPet.checkStatus(); // Final status display
     cout << "\n[Game Over] Sadly, " << name << " has passed away." << endl; // Death message
 
-    return 0;                   // Program terminates successfully
+    return 0; // Successful execution end
 }
